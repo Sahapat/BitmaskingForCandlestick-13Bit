@@ -312,7 +312,7 @@ namespace CandleStick
             double MinCurrent = Math.Min(current.Open, current.Close);
             double MaxBefore = Math.Max(beforeData.Open, beforeData.Close);
 
-            if (MinCurrent > MaxBefore)
+            if (MinCurrent >= MaxBefore)
             {
                 return (short)TypeTrend.UP;
             }
@@ -324,7 +324,7 @@ namespace CandleStick
             double MaxCurrent = Math.Max(current.Open, current.Close);
             double MinBefore = Math.Min(beforeData.Open, beforeData.Close);
 
-            if (MaxCurrent < MinBefore)
+            if (MaxCurrent <= MinBefore)
             {
                 return (short)TypeTrend.UP;
             }

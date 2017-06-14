@@ -223,7 +223,7 @@ namespace CandleStick
         private void setNormalData()
         {
             SetNormalData setnormal = new SetNormalData();
-            NormalData = setnormal.getNormalData(BinaryCandleProperty, 1000);
+            NormalData = setnormal.getNormalData(BinaryCandleProperty, 0);
         }
         private void PackingData()
         {
