@@ -33,5 +33,7 @@ namespace CandleStick
         public short Body;
         public short GAP;
         public short Volume;
+        public short HigherLow;
+        public short LowerHigh;
     };
 }
