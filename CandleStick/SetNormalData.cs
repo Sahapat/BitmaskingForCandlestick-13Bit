@@ -151,65 +151,80 @@ namespace CandleStick
         }
         private void Shifting()
         {
-            for(int i = 0;i<normalData.Length;i++)
+            for(int i = 1;i<=normalData.Length-1;i++)
             {
-                if (i != 0)
-                {
-                    while (Math.Min(normalData[i].Open, normalData[i].Close) != Math.Min(normalData[i - 1].Open, normalData[i - 1].Close))
-                    {
-                        if (Math.Min(normalData[i].Open, normalData[i].Close) > Math.Min(normalData[i - 1].Open, normalData[i - 1].Close))
-                        {
-                            ShiftDown(i);
-                        }
-                        else
-                        {
-                            ShiftUp(i);
-                        }
-                    }
-                }
+                SetDefault(i);
                 if (status[i].GAP == (int)CandleGAP.GAP)
                 {
                     if (status[i].HigherHigh == 1)
                     {
                         while (normalData[i].Low <= normalData[i - 1].High)
                         {
-                            ShiftUp(i);
+                            ShiftUp(i,1);
                         }
                     }
                     else
                     {
                         while (normalData[i].High >= normalData[i - 1].Low)
                         {
-                            ShiftDown(i);
+                            ShiftDown(i,1);
                         }
                     }
                 }
                 else
                 {
-                    if (status[i].HigherHigh == 1)
+                    if (status[i].HigherHigh == 1 && status[i].HigherLow == 1)
                     {
-                        ShiftUp(i);
+                        int current = Math.Min(normalData[i].Open, normalData[i].Close);
+                        int before = Math.Min(normalData[i - 1].Open, normalData[i - 1].Close);
+
+                        ShiftUp(i,Math.Abs(current - before));
+                    }
+                    else if(status[i].LowerLow == 1&&status[i].LowerHigh == 1)
+                    {
+                        int current = Math.Max(normalData[i].Open, normalData[i].Close);
+                        int before = Math.Max(normalData[i - 1].Open, normalData[i - 1].Close);
+
+                        ShiftDown(i,Math.Abs(current - before));
+                    }
+                    else if(status[i].HigherHigh == 1)
+                    {
+                        ShiftUp(i,1);
                     }
                     else if(status[i].LowerLow == 1)
                     {
-                        ShiftDown(i);
+                        ShiftDown(i,1);
                     }
                 }
             }
         }
-        private void ShiftUp(int idx)
+        private void SetDefault(int idx)
         {
-            normalData[idx].Open += 1;
-            normalData[idx].Low += 1;
-            normalData[idx].Close += 1;
-            normalData[idx].High += 1;
+            while (Math.Min(normalData[idx].Open, normalData[idx].Close) != Math.Min(normalData[idx - 1].Open, normalData[idx - 1].Close))
+            {
+                if (Math.Min(normalData[idx].Open, normalData[idx].Close) > Math.Min(normalData[idx - 1].Open, normalData[idx - 1].Close))
+                {
+                    ShiftDown(idx,1);
+                }
+                else
+                {
+                    ShiftUp(idx,1);
+                }
+            }
         }
-        private void ShiftDown(int idx)
+        private void ShiftUp(int idx,int shift)
         {
-            normalData[idx].Open -= 1;
-            normalData[idx].Low -= 1;
-            normalData[idx].Close -= 1;
-            normalData[idx].High -= 1;
+            normalData[idx].Open += shift;
+            normalData[idx].Low += shift;
+            normalData[idx].Close += shift;
+            normalData[idx].High += shift;
+        }
+        private void ShiftDown(int idx,int shift)
+        {
+            normalData[idx].Open -= shift;
+            normalData[idx].Low -= shift;
+            normalData[idx].Close -= shift;
+            normalData[idx].High -= shift;
         }
     }
 }
