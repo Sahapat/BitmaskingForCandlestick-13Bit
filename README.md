@@ -1,1 +1,0 @@
-# CandleStick-13BitVersion
