@@ -18,10 +18,10 @@ namespace CandleStick
     };
     struct CandleNormalData
     {
-        public float High;
-        public float Low;
-        public float Open;
-        public float Close;
+        public int High;
+        public int Low;
+        public int Open;
+        public int Close;
     };
     struct CandleStatus
     {
