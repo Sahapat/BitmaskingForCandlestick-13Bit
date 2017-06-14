@@ -34,7 +34,7 @@ namespace CandleStick
     {
         public static CandleStatus[] UnPacks(BigInteger package,int PackageCount)
         {
-            int packageKey = 2047;
+            int packageKey = 8191;
             CandleStatus[] output = new CandleStatus[PackageCount];
             BigInteger[] singleData = new BigInteger[PackageCount];
             
@@ -42,7 +42,7 @@ namespace CandleStick
             for(int i =0;i<PackageCount;i++)
             {
                 singleData[i] = (package & (packageKey<<getSingleDatashift))>>getSingleDatashift;
-                getSingleDatashift += 11;
+                getSingleDatashift += 13;
             }
 
             byte Key1 = 1;
@@ -57,6 +57,8 @@ namespace CandleStick
                 output[i].Direction = (short)((singleData[i] & Key1 << 8) >> 8);
                 output[i].LowerLow = (short)((singleData[i] & Key1 << 9) >> 9);
                 output[i].HigherHigh = (short)((singleData[i] & Key1 << 10) >> 10);
+                output[i].LowerHigh = (short)((singleData[i] & Key1 << 11) >> 11);
+                output[i].HigherLow = (short)((singleData[i] & Key1 << 12) >> 12);
             }
             return output;
         }
@@ -74,6 +76,8 @@ namespace CandleStick
             output.Direction = (short)((package & Key1 << 8) >> 8);
             output.LowerLow = (short)((package & Key1 << 9) >> 9);
             output.HigherHigh = (short)((package & Key1 << 10) >> 10);
+            output.LowerHigh = (short)((package & Key1 << 11) >> 11);
+            output.HigherLow = (short)((package & Key1 << 12) >> 12);
 
             return output;
         }
@@ -82,7 +86,7 @@ namespace CandleStick
             BigInteger output = 0;
             for(int i =0;i<NumPack;i++)
             {
-                output = (output | (data[i] << (i * 11)));
+                output = (output | (data[i] << (i * 13)));
             }
             return output;
         }
@@ -148,6 +152,8 @@ namespace CandleStick
                     maskData[i].HigherHigh = checkHH(rawData[i], rawData[i - 1]);
                     maskData[i].LowerLow = checkLL(rawData[i], rawData[i - 1]);
                     maskData[i].GAP = checkGAP(rawData[i],rawData[i-1]);
+                    maskData[i].HigherLow = checkHigherLow(rawData[i], rawData[i - 1]);
+                    maskData[i].LowerHigh = checkLowerHigh(rawData[i], rawData[i - 1]);
                 }
                 if (i-DayOfAvgVolume >= 0)
                 {
@@ -183,6 +189,8 @@ namespace CandleStick
             temp = temp | (data.Direction << 8);
             temp = temp | (data.LowerLow << 9);
             temp = temp | (data.HigherHigh << 10);
+            temp = temp | (data.LowerHigh << 11);
+            temp = temp | (data.HigherLow << 12);
             return temp;
         }
         private double GetSD(double[] data)
@@ -299,5 +307,29 @@ namespace CandleStick
             }
             else return (short)CheckVolume.NotPeak;
         }//check
+        private short checkHigherLow(CandleStickData current,CandleStickData beforeData)
+        {
+            double MinCurrent = Math.Min(current.Open, current.Close);
+            double MaxBefore = Math.Max(beforeData.Open, beforeData.Close);
+
+            if (MinCurrent > MaxBefore)
+            {
+                return (short)TypeTrend.UP;
+            }
+            else
+                return (short)TypeTrend.DOWN;
+        }
+        private short checkLowerHigh(CandleStickData current,CandleStickData beforeData)
+        {
+            double MaxCurrent = Math.Max(current.Open, current.Close);
+            double MinBefore = Math.Min(beforeData.Open, beforeData.Close);
+
+            if (MaxCurrent < MinBefore)
+            {
+                return (short)TypeTrend.UP;
+            }
+            else
+                return (short)TypeTrend.DOWN;
+        }
     }
 }
