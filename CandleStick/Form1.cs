@@ -34,6 +34,7 @@ namespace CandleStick
             InitChart();
             VolumeAvg.Visible = false;
             Save.Visible = false;
+            this.MaximizeBox = false;
         }
         private void GetData_Click(object sender, EventArgs e)
         {
@@ -127,24 +128,24 @@ namespace CandleStick
                         CandleSeries.Append(":");
                     }
                 }
-                while (outBinaryCandle.Length != 11 || BitPack.Length != DayOfAvgVolume*11)
+                while (outBinaryCandle.Length != 13 || BitPack.Length != DayOfAvgVolume*13)
                 {
-                    if(outBinaryCandle.Length > 11)
+                    if(outBinaryCandle.Length > 13)
                     {
                         outBinaryCandle.Remove(0);
                     }
-                    else if(outBinaryCandle.Length < 11)
+                    else if(outBinaryCandle.Length < 13)
                     {
                         string temp = "0";
                         temp += outBinaryCandle;
                         outBinaryCandle = temp;
                     }
 
-                    if(BitPack.Length > DayOfAvgVolume*11)
+                    if(BitPack.Length > DayOfAvgVolume*13)
                     {
                         outBinaryCandle.Remove(0);
                     }
-                    else if(BitPack.Length < DayOfAvgVolume*11)
+                    else if(BitPack.Length < DayOfAvgVolume*13)
                     {
                         string temp = "0";
                         temp += BitPack;
