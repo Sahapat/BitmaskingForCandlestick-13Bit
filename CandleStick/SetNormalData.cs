@@ -178,14 +178,14 @@ namespace CandleStick
                         int current = Math.Min(normalData[i].Open, normalData[i].Close);
                         int before = Math.Min(normalData[i - 1].Open, normalData[i - 1].Close);
 
-                        ShiftUp(i,Math.Abs(current - before));
+                        ShiftUp(i,Math.Abs(current - before)+1);
                     }
                     else if(status[i].LowerLow == 1&&status[i].LowerHigh == 1)
                     {
                         int current = Math.Max(normalData[i].Open, normalData[i].Close);
                         int before = Math.Max(normalData[i - 1].Open, normalData[i - 1].Close);
 
-                        ShiftDown(i,Math.Abs(current - before));
+                        ShiftDown(i,Math.Abs(current - before)+1);
                     }
                     else if(status[i].HigherHigh == 1)
                     {
