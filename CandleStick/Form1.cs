@@ -57,6 +57,7 @@ namespace CandleStick
                 setNormalData();
                 SetChart();
                 SetNormalChart();
+                MessageBox.Show(candleChart.ChartAreas[0].AxisY.ScaleView.ViewMaximum.ToString());
             }
         }
         private void Back_Click(object sender, EventArgs e)
