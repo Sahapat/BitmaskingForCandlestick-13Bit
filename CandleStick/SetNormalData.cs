@@ -12,7 +12,7 @@ namespace CandleStick
         private CandleStatus[] status = new CandleStatus[0];
         private CandleNormalData[] normalData = new CandleNormalData[0];
         private int StartPoint;
-
+        private short ShiftSize = 1;
         private short SizePerUnit = 1; //It's mean 1 point per unit
 
         public CandleNormalData[] getNormalData(BigInteger[] package,int startPoint)
@@ -63,14 +63,14 @@ namespace CandleStick
                     {
                         while (normalData[i].Low <= normalData[i - 1].High)
                         {
-                            ShiftUp(i,1);
+                            ShiftUp(i,ShiftSize);
                         }
                     }
                     else
                     {
                         while (normalData[i].High >= normalData[i - 1].Low)
                         {
-                            ShiftDown(i,1);
+                            ShiftDown(i,ShiftSize);
                         }
                     }
                 }
@@ -92,11 +92,11 @@ namespace CandleStick
                     }
                     else if(status[i].HigherHigh == 1)
                     {
-                        ShiftUp(i,1);
+                        ShiftUp(i,ShiftSize);
                     }
                     else if(status[i].LowerLow == 1)
                     {
-                        ShiftDown(i,1);
+                        ShiftDown(i,ShiftSize);
                     }
                 }
             }
@@ -107,11 +107,11 @@ namespace CandleStick
             {
                 if (Math.Min(normalData[idx].Open, normalData[idx].Close) > Math.Min(normalData[idx - 1].Open, normalData[idx - 1].Close))
                 {
-                    ShiftDown(idx,1);
+                    ShiftDown(idx,ShiftSize);
                 }
                 else
                 {
-                    ShiftUp(idx,1);
+                    ShiftUp(idx,ShiftSize);
                 }
             }
         }
