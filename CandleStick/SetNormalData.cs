@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Numerics;
 
 namespace CandleStick
@@ -13,7 +13,7 @@ namespace CandleStick
         private CandleNormalData[] normalData = new CandleNormalData[0];
         private int StartPoint;
         private short ShiftSize = 1;
-        private short SizePerUnit = 1; //It's mean 1 point per unit
+        private short SizePerUnit = 2; //It's mean 1 point per unit
 
         public CandleNormalData[] getNormalData(BigInteger[] package,int startPoint)
         {
@@ -39,7 +39,7 @@ namespace CandleStick
                 normalData[i].Low = StartPoint;
                 if(status[i].Direction == (int)TypeTrend.UP)
                 {
-                    normalData[i].Open = normalData[i].Low+(status[i].LowerShadow * SizePerUnit);
+                    normalData[i].Open = normalData[i].Low + (status[i].LowerShadow * SizePerUnit);
                     normalData[i].Close = normalData[i].Open + (status[i].Body * SizePerUnit);
                     normalData[i].High = normalData[i].Close + (status[i].UpperShadow * SizePerUnit);
                 }
@@ -47,7 +47,7 @@ namespace CandleStick
                 {
                     normalData[i].Close = normalData[i].Low + (status[i].LowerShadow * SizePerUnit);
                     normalData[i].Open = normalData[i].Close + (status[i].Body * SizePerUnit);
-                    normalData[i].High = normalData[i].Close + (status[i].UpperShadow * SizePerUnit);
+                    normalData[i].High = normalData[i].Open + (status[i].UpperShadow * SizePerUnit);
                 }
             }
             
@@ -59,47 +59,70 @@ namespace CandleStick
                 SetDefault(i);
                 if (status[i].GAP == (int)CandleGAP.GAP)
                 {
-                    if (status[i].HigherHigh == 1)
+                    if (status[i].HigherHigh == (int)TypeTrend.UP)
                     {
-                        while (normalData[i].Low <= normalData[i - 1].High)
-                        {
-                            ShiftUp(i,ShiftSize);
-                        }
+                        int Distance = 0;
+                        int LowCurrent = normalData[i].Low;
+                        int HighBefore = normalData[i - 1].High;
+                        Distance = Math.Abs(LowCurrent - HighBefore) + ShiftSize;
+                        ShiftUp(i, Distance);
                     }
                     else
                     {
-                        while (normalData[i].High >= normalData[i - 1].Low)
-                        {
-                            ShiftDown(i,ShiftSize);
-                        }
+                        int Distance = 0;
+                        int HighCurrent = normalData[i].High;
+                        int LowBefore = normalData[i - 1].Low;
+                        Distance = Math.Abs(LowBefore - HighCurrent) + ShiftSize;
+                        ShiftDown(i, Distance);
                     }
                 }
                 else
                 {
-                    if (status[i].HigherHigh == 1 && status[i].HigherLow == 1)
-                    {
-                        int current = Math.Min(normalData[i].Open, normalData[i].Close);
-                        int before = Math.Max(normalData[i - 1].Open, normalData[i - 1].Close);
+                    int MinCurrent = Math.Min(normalData[i].Close, normalData[i].Open);
+                    int MaxCurrent = Math.Max(normalData[i].Close, normalData[i].Open);
+                    int MinBefore = Math.Min(normalData[i-1].Close, normalData[i-1].Open);
+                    int MaxBefore = Math.Max(normalData[i-1].Close, normalData[i-1].Open);
 
-                        ShiftUp(i,Math.Abs(current - before));
-                    }
-                    else if(status[i].LowerLow == 1&&status[i].LowerHigh == 1)
+                    if (status[i].HigherHigh == 1)
                     {
-                        int current = Math.Max(normalData[i].Open, normalData[i].Close);
-                        int before = Math.Min(normalData[i - 1].Open, normalData[i - 1].Close);
+                        if (status[i].HigherLow == 1)
+                        {
+                            int Distance = Math.Abs(MinCurrent - MaxBefore);
+                            ShiftUp(i, Distance);
+                        }
+                        else
+                        {
+                            int Distance = (MaxCurrent - MaxBefore < 0) ? Distance = (MaxBefore - MaxCurrent) : Distance = 0;
+                            ShiftUp(i, Distance+ShiftSize);
+                            if(status[i].LowerLow == 1)
+                            {
+                                int MinCur = Math.Min(normalData[i].Open, normalData[i].Close);
+                                int MinBef = Math.Min(normalData[i - 1].Open, normalData[i - 1].Close);
 
-                        ShiftDown(i,Math.Abs(current - before));
+                                ShiftDown(i, (MinCur - MinBef) + ShiftSize);
+                            }
+                        }
                     }
-                    else if(status[i].HigherHigh == 1)
+                    else if (status[i].LowerLow == 1)
                     {
-                        ShiftUp(i,ShiftSize);
-                    }
-                    else if(status[i].LowerLow == 1)
-                    {
-                        ShiftDown(i,ShiftSize);
+                        if (status[i].LowerHigh == 1)
+                        {
+                            int Distance = Math.Abs(MaxCurrent - MinBefore);
+                            ShiftDown(i, Distance);
+                        }
+                        else
+                        {
+                            int Distance = (MinBefore - MinCurrent <= 0) ? Distance = MinCurrent - MinBefore : Distance = 0;
+                            ShiftDown(i, Distance+ShiftSize);
+                            if (Math.Max(normalData[i].Open, normalData[i].Close) > Math.Max(normalData[i - 1].Open, normalData[i - 1].Close))
+                            {
+                                ShiftDown(i, Math.Max(normalData[i].Open, normalData[i].Close) - Math.Max(normalData[i - 1].Open, normalData[i - 1].Close));
+                            }
+                        }
                     }
                 }
             }
+            CheckDefualtNormal();
         }
         private void SetDefault(int idx)
         {
@@ -128,6 +151,24 @@ namespace CandleStick
             normalData[idx].Low -= shift;
             normalData[idx].Close -= shift;
             normalData[idx].High -= shift;
+        }
+        private void CheckDefualtNormal()
+        {
+            for(int i =0;i<normalData.Length;i++)
+            {
+                if(normalData[i].Low > normalData[i].High)
+                {
+                    MessageBox.Show("Invalid : "+i);
+                }
+                if (normalData[i].Open > normalData[i].High)
+                {
+                    MessageBox.Show("Invalid : "+i);
+                }
+                if (normalData[i].Close > normalData[i].High)
+                {
+                    MessageBox.Show("Invalid : "+i);
+                }
+            }
         }
     }
 }
