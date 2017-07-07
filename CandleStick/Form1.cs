@@ -196,17 +196,45 @@ namespace CandleStick
         }
         private void SetChart()
         {
+            float Min = 0;
+            float Max = 0;
             for (int i = currentDisplay;i< currentDisplay+amountDisplay; i++)
             {
                 candleChart.Series[0].Points.AddXY(RawData[i].DateTime, RawData[i].High, RawData[i].Low, RawData[i].Open, RawData[i].Close);
+                if(i != currentDisplay)
+                {
+                    Min = (Min < RawData[i].Low) ? Min : RawData[i].Low;
+                    Max = (Max < RawData[i].High) ? RawData[i].High : Max;
+                }
+                else
+                {
+                    Min = RawData[i].Low;
+                    Max = RawData[i].High;
+                }
             }
+            candleChart.ChartAreas[0].AxisY.Minimum = (int)Min;
+            candleChart.ChartAreas[0].AxisY.Maximum = (int)Max;
         }
         private void SetNormalChart()
         {
+            float Min = 0;
+            float Max = 0;
             for (int i = currentDisplay; i < currentDisplay + amountDisplay; i++)
             {
                 normalChart.Series[0].Points.AddXY(RawData[i].DateTime, NormalData[i].High, NormalData[i].Low, NormalData[i].Open, NormalData[i].Close);
+                if(i != currentDisplay)
+                {
+                    Min = (Min < NormalData[i].Low) ? Min : NormalData[i].Low;
+                    Max = (Max < NormalData[i].High) ? NormalData[i].High : Max;
+                }
+                else
+                {
+                    Min = NormalData[i].Low;
+                    Max = NormalData[i].High;
+                }
             }
+            normalChart.ChartAreas[0].AxisY.Minimum = Min;
+            normalChart.ChartAreas[0].AxisY.Maximum = Max;
         }
         private void SetRawData()
         {
