@@ -7,31 +7,31 @@ using System.Numerics;
 
 namespace CandleStick
 {
-    enum TypeCandle
-    {
-        NONE,
-        LOW,
-        MID,
-        HIGH
-    };
-    enum TypeTrend
-    {
-        DOWN,
-        UP
-    };
-    enum CandleGAP
-    {
-        NotGAP,
-        GAP
-    };
-    enum CheckVolume
-    {
-        NotPeak,
-        Peak
-    };
-
     class Package
     {
+        enum TypeCandle
+        {
+            NONE,
+            LOW,
+            MID,
+            HIGH
+        };
+        enum TypeTrend
+        {
+            DOWN,
+            UP
+        };
+        enum CandleGAP
+        {
+            NotGAP,
+            GAP
+        };
+        enum CheckVolume
+        {
+            NotPeak,
+            Peak
+        };
+
         public static CandleStatus[] UnPacks(BigInteger package,int PackageCount)
         {
             int packageKey = 8191;
@@ -310,9 +310,9 @@ namespace CandleStick
         private short checkHigherLow(CandleStickData current,CandleStickData beforeData)
         {
             double MinCurrent = Math.Min(current.Open, current.Close);
-            double MaxBefore = Math.Max(beforeData.Open, beforeData.Close);
+            double MinBefore = Math.Min(beforeData.Open, beforeData.Close);
 
-            if (MinCurrent >= MaxBefore)
+            if (MinCurrent >= MinBefore)
             {
                 return (short)TypeTrend.UP;
             }
@@ -322,9 +322,9 @@ namespace CandleStick
         private short checkLowerHigh(CandleStickData current,CandleStickData beforeData)
         {
             double MaxCurrent = Math.Max(current.Open, current.Close);
-            double MinBefore = Math.Min(beforeData.Open, beforeData.Close);
+            double MaxBefore = Math.Max(beforeData.Open, beforeData.Close);
 
-            if (MaxCurrent <= MinBefore)
+            if (MaxCurrent <= MaxBefore)
             {
                 return (short)TypeTrend.UP;
             }
