@@ -37,7 +37,7 @@ namespace CandleStick
             for(int i =0;i< normalData.Length;i++)
             {
                 normalData[i].Low = StartPoint;
-                if(status[i].Direction == (int)TypeTrend.UP)
+                if(status[i].Direction == 1)
                 {
                     normalData[i].Open = normalData[i].Low + (status[i].LowerShadow * SizePerUnit);
                     normalData[i].Close = normalData[i].Open + (status[i].Body * SizePerUnit);
@@ -57,9 +57,9 @@ namespace CandleStick
             for(int i = 1;i<=normalData.Length-1;i++)
             {
                 SetDefault(i);
-                if (status[i].GAP == (int)CandleGAP.GAP)
+                if (status[i].GAP == 1)
                 {
-                    if (status[i].HigherHigh == (int)TypeTrend.UP)
+                    if (status[i].HigherHigh == 1)
                     {
                         int Distance = 0;
                         int LowCurrent = normalData[i].Low;
